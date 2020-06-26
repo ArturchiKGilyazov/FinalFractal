@@ -1,17 +1,18 @@
-import javafx.application.Application;
-import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.layout.FlowPane;
-import javafx.stage.Stage;
+
+import javafx.application.*;
+import javafx.geometry.*;
+import javafx.scene.*;
+import javafx.scene.canvas.*;
+import javafx.scene.image.*;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
+import javafx.event.*;
 
 public class Main extends Application{
 
-    private double width = 1024;
-    private double heigth = 1024;
+    private double width = 900;
+    private double heigth = 600;
 
 
     //Множество мандельброта: zk=(zk-1)^2 + z0
@@ -31,9 +32,32 @@ public class Main extends Application{
 
         root.setAlignment(Pos.BOTTOM_CENTER);    //2 lesson/Пример с воронами
         root.getChildren().add(canvas); //К руту добавляем конвас, который добавляется к представлению
-        Render.render(context, width, heigth, pixels);      //cerf static требует
+
+        Render.render(context, 0,0, width, heigth, pixels, 1);      //cerf static требует
         Render.draw(pixelWriter, pixels);
 
+        Mouse mouse = new Mouse(width, heigth);
+
+        //пробуем с мышкой
+        EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>(){
+
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED){
+                    mouse.setX(mouseEvent.getX());
+                    mouse.setY(mouseEvent.getY());
+
+                    int yourZoom = 2;   //переменная, которая показывает, на сколько мы должны увеличить картинку
+                    mouse.getZooming(yourZoom);
+
+                    mouse.update(mouse);
+                    Render.render(context, mouse.getStartX(), mouse.getStartY(), mouse.getEndX(), mouse.getEndY(), pixels, mouse.getZoom());
+                    Render.draw(pixelWriter, pixels);
+                }
+            }
+        };
+
+        canvas.setOnMouseClicked(eventHandler);
 
         stage.setTitle("Fractal");
         stage.setScene(scene);

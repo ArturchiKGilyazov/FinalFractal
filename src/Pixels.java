@@ -2,11 +2,7 @@ import java.util.Vector;
 
 public class Pixels {
     Vector<Dot> pixels;
-/*
-    public Pixels(){
-        pixels  =   V
-    }
-*/
+
     public Pixels() {
         pixels = new Vector<>();
     }
